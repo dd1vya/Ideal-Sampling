@@ -43,10 +43,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import resample
 
-fs = 100          # sampling frequency
-f = 5             # signal frequency
+fs = 100        
+f = 5    
 
-# Dense "continuous" signal
 t = np.linspace(0, 1, 1000)
 signal = np.sin(2 * np.pi * f * t)
 
@@ -54,10 +53,8 @@ signal = np.sin(2 * np.pi * f * t)
 t_s = np.arange(0, 1, 1/fs)
 signal_s = np.sin(2 * np.pi * f * t_s)
 
-# Reconstruction using resample
 reconstructed = resample(signal_s, len(t))
 
-# Plot
 plt.figure(figsize=(10,6))
 
 plt.subplot(3,1,1)
@@ -82,27 +79,17 @@ import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter
 
 # Parameters
-fs = 1000                      # Sampling frequency
-t = np.arange(0, 1, 1/fs)     # Time axis
-fm = 5                         # Message frequency
-fp = 50                        # Pulse (sampling) frequency
-
-# Message signal
+fs = 1000                     
+t = np.arange(0, 1, 1/fs)    
+fm = 5                        
+fp = 50                        
 message = np.sin(2 * np.pi * fm * t)
-
-# Pulse train (rectangular pulses)
 pulse = (np.sin(2 * np.pi * fp * t) > 0).astype(int)
 
-# Natural sampling (analog model)
 sampled = message * pulse
-
-# Low-pass filter design (for reconstruction)
 b, a = butter(5, 10 / (0.5 * fs), btype='low')
-
-# Reconstruction
 reconstructed = lfilter(b, a, sampled)
 
-# Plotting
 plt.figure(figsize=(10, 8))
 
 plt.subplot(4,1,1)
@@ -130,35 +117,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter
 
-# Parameters
 fs = 1000
 t = np.arange(0, 1, 1/fs)
 fm = 5
 fp = 50
-
-# Message signal
 message = np.sin(2*np.pi*fm*t)
 
-# Sampling indices
+
 step = int(fs / fp)
 indices = np.arange(0, len(t), step)
 
-# Flat-top sampling
+
 flat_top = np.zeros_like(t)
 width = step // 2
-
 for i in indices:
     flat_top[i:min(i+width, len(t))] = message[i]
 
-# Pulse train (for plotting)
 pulse = np.zeros_like(t)
 pulse[indices] = 1
 
-# Low-pass filter
 b, a = butter(5, (2*fm)/(0.5*fs), 'low')
 reconstructed = lfilter(b, a, flat_top)
 
-# Plot (UNCHANGED STYLE)
 plt.figure(figsize=(14, 10))
 
 plt.subplot(4, 1, 1)
