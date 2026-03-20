@@ -123,10 +123,8 @@ fm = 5
 fp = 50
 message = np.sin(2*np.pi*fm*t)
 
-
 step = int(fs / fp)
 indices = np.arange(0, len(t), step)
-
 
 flat_top = np.zeros_like(t)
 width = step // 2
