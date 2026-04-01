@@ -40,33 +40,29 @@ Most commonly used in practical systems
 ### Ideal sampling
 ```
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.signal import resample
 
-fs = 100        
-f = 5    
+f, fs = 5, 100
 
 t = np.linspace(0, 1, 1000)
-signal = np.sin(2 * np.pi * f * t)
+ts = np.arange(0, 1, 1/fs)
 
-# Sampled signal
-t_s = np.arange(0, 1, 1/fs)
-signal_s = np.sin(2 * np.pi * f * t_s)
-
-reconstructed = resample(signal_s, len(t))
+x = np.sin(2*np.pi*f*t)
+xs = np.sin(2*np.pi*f*ts)
+xrec = resample(xs, len(t))
 
 plt.figure(figsize=(10,6))
 
 plt.subplot(3,1,1)
-plt.plot(t, signal)
+plt.plot(t, x)
 plt.title("Continuous Signal")
 
 plt.subplot(3,1,2)
-plt.stem(t_s, signal_s)
+plt.stem(ts, xs, basefmt="r-")
 plt.title("Sampled Signal")
 
 plt.subplot(3,1,3)
-plt.plot(t, reconstructed, 'r--')
+plt.plot(t, xrec, 'r--')
 plt.title("Reconstructed Signal")
 
 plt.tight_layout()
@@ -75,37 +71,33 @@ plt.show()
 ### Natural samplying
 ```
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter
 
-# Parameters
-fs = 1000                     
-t = np.arange(0, 1, 1/fs)    
-fm = 5                        
-fp = 50                        
-message = np.sin(2 * np.pi * fm * t)
-pulse = (np.sin(2 * np.pi * fp * t) > 0).astype(int)
+fs, fm, fp = 1000, 5, 50
+t = np.arange(0, 1, 1/fs)
+m = np.sin(2*np.pi*fm*t)                
+p = (np.sin(2*np.pi*fp*t) > 0).astype(int) 
 
-sampled = message * pulse
-b, a = butter(5, 10 / (0.5 * fs), btype='low')
-reconstructed = lfilter(b, a, sampled)
+s = m * p                              
+b, a = butter(5, 10/(fs/2))
+r = lfilter(b, a, s)
 
 plt.figure(figsize=(10, 8))
 
 plt.subplot(4,1,1)
-plt.plot(t, message)
+plt.plot(t, m)
 plt.title("Message Signal")
 
 plt.subplot(4,1,2)
-plt.plot(t, pulse)
+plt.plot(t, p)
 plt.title("Pulse Train")
 
 plt.subplot(4,1,3)
-plt.plot(t, sampled)
+plt.plot(t, s)
 plt.title("Natural Sampling")
 
 plt.subplot(4,1,4)
-plt.plot(t, reconstructed, 'g')
+plt.plot(t, r, 'g')
 plt.title("Reconstructed Signal")
 
 plt.tight_layout()
@@ -176,11 +168,13 @@ plt.show()
 ```
 # Output Waveform
 ### Ideal samplying
-<img width="990" height="590" alt="image" src="https://github.com/user-attachments/assets/e48bb18f-8d0d-43e5-be6e-63f60f540f90" />
+<img width="990" height="590" alt="image" src="https://github.com/user-attachments/assets/9e10c20f-62e4-4c39-9f8b-cd25c209d126" />
+
 
 
 ### Natural samplying
-<img width="989" height="790" alt="image" src="https://github.com/user-attachments/assets/6129082d-1e1d-4cab-84ab-ec9aa4cec1bf" />
+<img width="989" height="790" alt="image" src="https://github.com/user-attachments/assets/964ba284-54ca-4da0-9dcf-b3665916c088" />
+
 
 
 ### Flat-top samplying
