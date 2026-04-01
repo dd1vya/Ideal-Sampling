@@ -6,36 +6,34 @@ Google colab
 # Theory
 ### Ideal sampling
 Ideal sampling is a theoretical concept in which the continuous-time signal is sampled using a train of impulses (delta functions).
+##### Characteristics
+-Each sample has zero width and infinite height
 
-Characteristics
+-Sampling is done at exact instants
 
-Each sample has zero width and infinite height
+-No distortion is introduced during sampling
 
-Sampling is done at exact instants
+-Practically not realizable
 
-No distortion is introduced during sampling
 
-Practically not realizable
 ### Natural sampling
 In natural sampling, the signal is sampled by multiplying it with a train of rectangular pulses having finite width.
+##### Characteristics
+-Pulse width is small but non-zero
 
-Characteristics
+-The top of the pulse follows the shape of the input signal
 
-Pulse width is small but non-zero
+-More practical than ideal sampling
 
-The top of the pulse follows the shape of the input signal
-
-More practical than ideal sampling
 ### Flat-top sampling
 Flat-top sampling is a practical sampling technique where the signal is sampled and held constant for a fixed duration.
+##### Characteristics
+-Each sample has a constant amplitude during the pulse width
 
-Characteristics
+-Implemented using a Sample-and-Hold (S/H) circuit
 
-Each sample has a constant amplitude during the pulse width
+-Most commonly used in practical systems
 
-Implemented using a Sample-and-Hold (S/H) circuit
-
-Most commonly used in practical systems
 # Program
 ### Ideal sampling
 ```
@@ -109,59 +107,41 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter
 
-fs = 1000
+fs, fm, fp = 1000, 5, 50
 t = np.arange(0, 1, 1/fs)
-fm = 5
-fp = 50
-message = np.sin(2*np.pi*fm*t)
+m = np.sin(2*np.pi*fm*t)
 
-step = int(fs / fp)
-indices = np.arange(0, len(t), step)
+step = fs // fp
+idx = np.arange(0, len(t), step)
 
-flat_top = np.zeros_like(t)
-width = step // 2
-for i in indices:
-    flat_top[i:min(i+width, len(t))] = message[i]
+ft = np.zeros_like(t)
+w = step // 2
+for i in idx:
+    ft[i:i+w] = m[i]
 
-pulse = np.zeros_like(t)
-pulse[indices] = 1
+p = np.zeros_like(t)
+p[idx] = 1
 
-b, a = butter(5, (2*fm)/(0.5*fs), 'low')
-reconstructed = lfilter(b, a, flat_top)
+b, a = butter(5, (2*fm)/(fs/2))
+r = lfilter(b, a, ft)
 
-plt.figure(figsize=(14, 10))
+plt.figure(figsize=(14,10))
 
-plt.subplot(4, 1, 1)
-plt.plot(t, message, label='Original Message Signal')
-plt.title('Original Message Signal')
-plt.xlabel('Time (s)')
-plt.ylabel('Amplitude')
-plt.legend()
-plt.grid(True)
+plt.subplot(4,1,1)
+plt.plot(t, m)
+plt.title("Original Message Signal")
 
-plt.subplot(4, 1, 2)
-plt.stem(t[indices], pulse[indices], basefmt=" ", label='Ideal Sampling Instances')
-plt.title('Ideal Sampling Instances')
-plt.xlabel('Time (s)')
-plt.ylabel('Amplitude')
-plt.legend()
-plt.grid(True)
+plt.subplot(4,1,2)
+plt.stem(t[idx], p[idx], basefmt=" ")
+plt.title("Ideal Sampling Instances")
 
-plt.subplot(4, 1, 3)
-plt.plot(t, flat_top, label='Flat-Top Sampled Signal')
-plt.title('Flat-Top Sampled Signal')
-plt.xlabel('Time (s)')
-plt.ylabel('Amplitude')
-plt.grid(True)
-plt.legend()
+plt.subplot(4,1,3)
+plt.plot(t, ft)
+plt.title("Flat-Top Sampled Signal")
 
-plt.subplot(4, 1, 4)
-plt.plot(t, reconstructed, label=f'Reconstructed Signal (Low-pass Filter, Cutoff={2*fm} Hz)', color='green')
-plt.title('Reconstructed Signal')
-plt.xlabel('Time (s)')
-plt.ylabel('Amplitude')
-plt.legend()
-plt.grid(True)
+plt.subplot(4,1,4)
+plt.plot(t, r, 'g')
+plt.title("Reconstructed Signal")
 
 plt.tight_layout()
 plt.show()
@@ -178,8 +158,7 @@ plt.show()
 
 
 ### Flat-top samplying
-<img width="1398" height="990" alt="image" src="https://github.com/user-attachments/assets/64d0928f-b046-404e-ac81-297d09d0cb06" />
-
+<img width="1390" height="989" alt="image" src="https://github.com/user-attachments/assets/15590f9d-cf4c-4f08-9710-9199f57be673" />
 
 
 # Results
